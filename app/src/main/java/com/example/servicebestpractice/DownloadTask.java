@@ -28,6 +28,8 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
 
     private int lastProgress;
 
+
+    // 传入回调接口
     public DownloadTask(DownloadListener listener) {
         this.listener = listener;
     }

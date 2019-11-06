@@ -22,6 +22,7 @@ public class DownloadService extends Service {
 
     private String downloadUrl;
 
+    // 回调，常用于服务完成某项指派的任务后，返回给Activity的消息。
     private DownloadListener listener = new DownloadListener() {
         @Override
         public void onProgress(int progress) {

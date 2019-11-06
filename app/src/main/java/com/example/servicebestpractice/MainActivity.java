@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -23,11 +24,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Log.d("zmm","Service disConnected!");
         }
 
         @Override
+        // Activity与service绑定成功后会调用 onServiceConnected, 向下转型成自定义的downloadBinder，指挥服务干什么就干什么
         public void onServiceConnected(ComponentName name, IBinder service) {
             downloadBinder = (DownloadService.DownloadBinder) service;
+            Log.d("zmm","Service Connected!");
         }
 
     };
@@ -36,9 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button startDownload = (Button) findViewById(R.id.start_download);
-        Button pauseDownload = (Button) findViewById(R.id.pause_download);
-        Button cancelDownload = (Button) findViewById(R.id.cancel_download);
+        Button startDownload = findViewById(R.id.start_download);
+        Button pauseDownload = findViewById(R.id.pause_download);
+        Button cancelDownload = findViewById(R.id.cancel_download);
         startDownload.setOnClickListener(this);
         pauseDownload.setOnClickListener(this);
         cancelDownload.setOnClickListener(this);
