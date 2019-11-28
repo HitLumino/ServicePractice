@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -16,7 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements NetStateChangeObserver, View.OnClickListener{
 
     private DownloadService.DownloadBinder downloadBinder;
 
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{ Manifest.permission. WRITE_EXTERNAL_STORAGE }, 1);
         }
+
+        NetStateChangeReceiver.registerReceiver(this);
     }
 
     @Override
@@ -89,9 +92,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onResume() {
+        NetStateChangeReceiver.registerObserver(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        NetStateChangeReceiver.unRegisterObserver(this);
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unbindService(connection);
+        NetStateChangeReceiver.unRegisterReceiver(this);
     }
 
+    @Override
+    public void onNetDisconnected() {
+        Toast.makeText(this, "网络断开", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNetConnected(NetWorkType networkType) {
+        Toast.makeText(this, "网络连接" + networkType, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNetConnectedWifiTo4G() {
+        Toast.makeText(this, "网络从Wifi->4G", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNetConnected4GToWifi() {
+        Toast.makeText(this, "网络从4G->Wifi", Toast.LENGTH_SHORT).show();
+    }
 }
